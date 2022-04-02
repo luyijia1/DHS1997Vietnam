@@ -41,3 +41,7 @@ Section1_Age <-
 
 Section1_Age
 
+# Write and export the csv version 
+library(readr)
+write.csv(Section1_Age, file = "Section1_Age.csv", row.names=FALSE)
+
