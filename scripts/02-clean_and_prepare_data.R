@@ -1,8 +1,10 @@
 # Since there are six background characteristics discussed, they will be separated into six sections. 
 # Pre-requisites:
-# -- Have to check the previous procedures about downloading the final report in PDF version, gathering and converting the dataset into CSV version.
+# -- Have to check the previous procedures about downloading the final report in PDF version, gathering and converting the dataset.
 # -- Check ‘scripts/01-gather_data.R’
 # Procedures below shows the cleaning and preparing for Section1_Age, indicating women's knowledge of ways to avoid AIDS across different age groups. 
+# After parcing, there were errors in the data in row 6 which is the Age group of "40-49". 
+# The data were reviewed and corrected. The dataset is converted into CSV version which can be checked in 'outputs/data/Section1_Age.csv'
 
 #### SECTION1_AGE ####
 
