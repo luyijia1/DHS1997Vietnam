@@ -1,0 +1,575 @@
+---
+title: "Different Distribution of the Knowledge of AIDS Prevention possessed by Ever-married Women in Vietnam in Final Report (1997)"
+author: Yijia Lu
+output: pdf_document
+date: '2022-04-03'
+thanks: "Code and data are available at: https://github.com/luyijia1/DHS1997Vietnam.git"
+abstract: "The analisis is based on the Vietnam Demographic and Health Survey in 1997. The survey counted both the percentage of ever-married Vietnamese women by their knowledge of AIDS prevention approaches and the percentage of women with misinformation about avoiding AIDS. The respondents were grouped by different background characteristics, including age, marital status, residence, project province,region and education. The survey revealed that the most effective way Vietnamese women were told to avoid HIV was to be with only one sexual partner. Assessing individuals' knowledge and attitudes toward prevention helps the country to improve public disease knowledge in a targeted manner."
+
+---
+
+```{r, include=FALSE}
+## SETUP ##
+library(janitor)
+library(pdftools)
+library(purrr)
+library(tidyverse)
+library(stringi)
+
+download.file(
+  "https://dhsprogram.com/pubs/pdf/FR104/FR104.pdf", 
+  "1997_Vietnam_DHS.pdf",
+  mode="wb")
+
+all_content <- pdf_text("1997_Vietnam_DHS.pdf")
+```
+
+```{r, include = FALSE}
+# select p135
+just_page_135 <- stri_split_lines(all_content[[135]])[[1]] 
+# Grab the type of table
+type_of_table <- just_page_135[1] |> str_squish()
+# Get rid of the top matter
+just_page_135_no_header <- just_page_135[5:length(just_page_135)] 
+# Get rid of the bottom matter
+just_page_135_no_header_no_footer <- just_page_135_no_header[1:34] 
+```
+
+
+# INTRODUCTION
+
+  The Demographic and Health Survey (DHS) program enables the collection of representative data in many countries, and its analysis and reporting. The 1997 Vietnam Demographic and Health Survey (VNDHS-11) was selected for this study. This nationwide, representative survey collected information on the population in urban and rural areas throughout Vietnam. The focus of this report is on the proportion of the knowledge of AIDS prevention of Vietnamese women. Acquired immunodeficiency syndrome (AIDS) is a chronic, potentially life-threatening disease caused by the human immunodeficiency virus (HIV), which interferes with the body's ability to fight infection and disease by compromising the immune system. HIV/AIDS continues to be a major global public health issue. Knowledge of AIDS prevention can help reduce infection from the disease. 
+  The survey was administered to ever-married women between the ages of 15-49 across Vietnam. The sample size was 5664 respondents. The survey spanned the period from July to October 1997. Due to age limitation, the percentage distribution of women aged 50 years and above regarding AIDS prevention was missing. This study focused on the propensity for the seven methods and the percentage of perceptions of wrong methods around six background characteristics of the respondents. This analysis uses the R language (R Core Team (2021)). The investigator asked respondents if they believed that AIDS could be prevented. If the answer was yes, respondents were asked to answer the method to avoid. Approximately 70 percent of respondents answered that having only one sexual partner could help reduce infection and transmission of the disease. In addition, about 21% of respondents believed that avoiding prostitution would be effective in preventing AIDS.
+
+# DATA
+
+```{r, include=FALSE}
+#### Section1_Age ####
+
+# Age + Convert into a tibble
+Age <- just_page_135_no_header_no_footer[4:9]
+Section1_Age <- tibble(all = Age)
+
+Section1_Age <-
+    Section1_Age |>
+    mutate(all = str_squish(all)) |>
+    mutate(all = str_replace(all, "6g.8", "68.8")) |>
+    mutate(all = str_replace(all, ",", ".")) |>
+    separate(col = all,
+             into = c("Background Characteristic", "No way to Avoid", "Abstain from Sex", "Use condom", "One sexual partner", "Avoid prostitues", "Avoid injections", "Don't know any way", "Percentage with misinformation"),
+             sep = " ", 
+             remove = TRUE,
+             fill = "right",
+             extra = "drop"
+    )
+
+  Section1_Age[6,2] <- c('3.1')
+  Section1_Age[6,3] <- c('3.1')
+  Section1_Age[6,3] <- c('3.1')
+  Section1_Age[6,4] <- c('29.0')
+  Section1_Age[6,5] <- c('68.2')
+  Section1_Age[6,6] <- c('24.0')
+  Section1_Age[6,7] <- c('29.7')
+  Section1_Age[6,8] <- c('15.2')
+  Section1_Age[6,9] <- c('4.6')
+  Section1_Age[2,6] <- c('11.6')
+  Section1_Age[2,7] <- c('17.0')
+  Section1_Age[2,8] <- c('14.7')
+  Section1_Age[2,9] <- c('1.9')
+
+Section1_Age
+```
+
+```{r}
+Section1_Age
+```
+
+
+In Section1, the percentage of knowledge about AIDS prevention is based on two variables: Age group and Ways to avoid. Each cell represents the percent of ever-married Vietnamese women in certain age group who preferred one of conditions of having sexual behaviours in 1997. The situation of having misinformation was considered and counted as well. For example, there were almost 67.8% of women at the age of 15-19 in Vietnam agreed with the condition that when there was only one sexual partner, people were more likely to be able to prevent from infecting AIDS. The age was divided into five groups: 15-19, 20-24, 25-29, 30-39 and 40-49. The distribution of percentage is shown in Section1_Age. 
+
+```{r, include=FALSE}
+library(readr)
+write.csv(Section1_Age, file = "Section1_Age.csv", row.names=FALSE) 
+```
+
+```{r, include=FALSE}
+#### Section2_Marital_Status ####
+
+# Marital_Status + Convert into a tibble
+Marital_Status <- just_page_135_no_header_no_footer[10:12]
+Section2_Marital_Status <- tibble(all = Marital_Status)
+
+Section2_Marital_Status <-
+    Section2_Marital_Status |>
+    mutate(all = str_squish(all)) |>
+    mutate(all = str_replace(all, ",", ".")) |>
+    separate(col = all,
+             into = c("Background Characteristic", "No way to Avoid", "Abstain from Sex", "Use condom", "One sexual partner", "Avoid prostitues", "Avoid injections", "Don't know any way", "Percentage with misinformation"),
+             sep = " ", 
+             remove = TRUE,
+             fill = "right",
+             extra = "drop"
+    )
+
+Section2_Marital_Status[1,1] <- c('Marital Status')
+Section2_Marital_Status[2,1] <- c('Currently married')
+Section2_Marital_Status[3,1] <- c('Formerly married')
+Section2_Marital_Status[1,2] <- c('NA')
+Section2_Marital_Status[2,2] <- c('3.7')
+Section2_Marital_Status[3,2] <- c('4.2')
+Section2_Marital_Status[2,3] <- c('3.4')
+Section2_Marital_Status[3,3] <- c('0.9')
+Section2_Marital_Status[2,4] <- c('32.0')
+Section2_Marital_Status[3,4] <- c('25.2')
+Section2_Marital_Status[2,5] <- c('70.5')
+Section2_Marital_Status[3,5] <- c('59.3')
+Section2_Marital_Status[2,6] <- c('20.8')
+Section2_Marital_Status[3,6] <- c('23.6')
+Section2_Marital_Status[2,7] <- c('26.9')
+Section2_Marital_Status[3,7] <- c('25.1')
+Section2_Marital_Status[2,8] <- c('14.0')
+Section2_Marital_Status[3,8] <- c('21.0')
+Section2_Marital_Status[2,9] <- c('3.3')
+Section2_Marital_Status[3,9] <- c('3.4')
+```
+
+```{r}
+Section2_Marital_Status
+```
+
+In Section2, respondents' marital status was discussed. The percentage of AIDS prevention knowledge is related to either currently married status or formerly married status. For example, there were approximately 26.9% of currently married women who chose avoiding injection to prevent. The distribution of percentage is shown in Section2_Marital_Status. 
+
+```{r, include=FALSE}
+library(readr)
+write.csv(Section2_Marital_Status, file = "Section2_Marital_Status.csv", row.names=FALSE) 
+```
+
+```{r, include=FALSE}
+#### Section3_Residence ####
+
+# Residence + Convert into a tibble
+Residence <- just_page_135_no_header_no_footer[13:15]
+Section3_Residence <- tibble(all = Residence)
+
+Section3_Residence <-
+    Section3_Residence |>
+    mutate(all = str_squish(all)) |>
+    mutate(all = str_replace(all, ",", ".")) |>
+    separate(col = all,
+             into = c("Background Characteristic", "No way to Avoid", "Abstain from Sex", "Use condom", "One sexual partner", "Avoid prostitues", "Avoid injections", "Don't know any way", "Percentage with misinformation"),
+             sep = " ", 
+             remove = TRUE,
+             fill = "right",
+             extra = "drop"
+    )
+
+library(readr)
+write.csv(Section3_Residence, file = "Section3_Residence.csv", row.names=FALSE) 
+
+```
+
+```{r}
+Section3_Residence
+```
+In Section3, the percentage was related to the residence of respondents and their knowledge to prevent AIDS. Participants lived either in urban or rural area. For example, it is obvious to notice that for those who lived in urban area, majority of women accepted that one sexual partner was more likely to be beneficial. The distribution of percentage is shown in Section3_Residence. 
+
+```{r, include=FALSE}
+#### Section4_Project_Province ####
+
+# Project_Province + Convert into a tibble
+Project_Province <- just_page_135_no_header_no_footer[16:18]
+Section4_Project_Province <- tibble(all = Project_Province)
+
+Section4_Project_Province <-
+    Section4_Project_Province |>
+    mutate(all = str_squish(all)) |>
+    mutate(all = str_replace(all, ",", ".")) |>
+    separate(col = all,
+             into = c("Background Characteristic", "No way to Avoid", "Abstain from Sex", "Use condom", "One sexual partner", "Avoid prostitues", "Avoid injections", "Don't know any way", "Percentage with misinformation"),
+             sep = " ", 
+             remove = TRUE,
+             fill = "right",
+             extra = "drop"
+    )
+
+Section4_Project_Province[1,1] <- c('Project province')
+Section4_Project_Province[1,2] <- c('NA')
+Section4_Project_Province[3,5] <- c('74.1')
+Section4_Project_Province[3,6] <- c('20.7')
+Section4_Project_Province[3,7] <- c('27.9')
+Section4_Project_Province[3,8] <- c('11.9')
+Section4_Project_Province[3,9] <- c('4.4')
+
+library(readr)
+write.csv(Section4_Project_Province, file = "Section4_Project_Province.csv", row.names=FALSE) 
+
+```
+
+```{r}
+Section4_Project_Province
+```
+
+In Section4, the background characteristics was about the province, which respondents lived either in project provinces or non-project provinces. All provinces were separated into two types to permit separate estimates for about 1/3 of provinces where the Population and Family Health Project was upgraded. The distribution of percentage is shown in Section4_Project_Province. 
+
+```{r, include=FALSE}
+#### Section5_Region ####
+
+# Project_Province + Convert into a tibble
+Region <- just_page_135_no_header_no_footer[19:26]
+Section5_Region <- tibble(all = Region)
+
+Section5_Region <-
+    Section5_Region |>
+    mutate(all = str_squish(all)) |>
+    mutate(all = str_replace(all, ",", ".")) |>
+    separate(col = all,
+             into = c("Background Characteristic", "No way to Avoid", "Abstain from Sex", "Use condom", "One sexual partner", "Avoid prostitues", "Avoid injections", "Don't know any way", "Percentage with misinformation"),
+             sep = " ", 
+             remove = TRUE,
+             fill = "right",
+             extra = "drop"
+    )
+
+Section5_Region[2,1] <- c('Northern Uplands')
+Section5_Region[2,2] <- c('3.5')
+Section5_Region[2,3] <- c('1.6')
+Section5_Region[2,4] <- c('37.4')
+Section5_Region[2,5] <- c('79.6')
+Section5_Region[2,6] <- c('12.3')
+Section5_Region[2,7] <- c('30.9')
+Section5_Region[2,8] <- c('7.9')
+Section5_Region[2,9] <- c('3.6')
+
+Section5_Region[3,1] <- c('Red River Delta')
+Section5_Region[3,2] <- c('1.2')
+Section5_Region[3,3] <- c('1.4')
+Section5_Region[3,4] <- c('35.3')
+Section5_Region[3,5] <- c('85.3')
+Section5_Region[3,6] <- c('20.3')
+Section5_Region[3,7] <- c('32.7')
+Section5_Region[3,8] <- c('4.2')
+Section5_Region[3,9] <- c('8.0')
+
+Section5_Region[4,1] <- c('North Central')
+Section5_Region[4,2] <- c('0.3')
+Section5_Region[4,3] <- c('6.8')
+Section5_Region[4,4] <- c('36.9')
+Section5_Region[4,5] <- c('72.3')
+Section5_Region[4,6] <- c('14.1')
+Section5_Region[4,7] <- c('20.9')
+Section5_Region[4,8] <- c('8.1')
+Section5_Region[4,9] <- c('1.2')
+
+Section5_Region[5,1] <- c('Central Coast')
+Section5_Region[5,2] <- c('7.1')
+Section5_Region[5,3] <- c('8.0')
+Section5_Region[5,4] <- c('34.6')
+Section5_Region[5,5] <- c('55.1')
+Section5_Region[5,6] <- c('21.5')
+Section5_Region[5,7] <- c('20.0')
+Section5_Region[5,8] <- c('20.4')
+Section5_Region[5,9] <- c('1.3')
+
+Section5_Region[6,1] <- c('Central Highlands')
+Section5_Region[6,2] <- c('16.3')
+Section5_Region[6,3] <- c('0.7')
+Section5_Region[6,4] <- c('15.0')
+Section5_Region[6,5] <- c('53.6')
+Section5_Region[6,6] <- c('23.5')
+Section5_Region[6,7] <- c('33.0')
+Section5_Region[6,8] <- c('27.8')
+Section5_Region[6,9] <- c('1.9')
+
+Section5_Region[7,9] <- c('0.2')
+
+Section5_Region[8,1] <- c('Mekong River Delta')
+Section5_Region[8,2] <- c('3.9')
+Section5_Region[8,3] <- c('3.1')
+Section5_Region[8,4] <- c('17.9')
+Section5_Region[8,5] <- c('54.2')
+Section5_Region[8,6] <- c('28.4')
+Section5_Region[8,7] <- c('26.4')
+Section5_Region[8,8] <- c('29.8')
+Section5_Region[8,9] <- c('2.2')
+
+Section5_Region
+
+library(readr)
+write.csv(Section5_Region, file = "Section5_Region.csv", row.names=FALSE) 
+```
+
+```{r}
+Section5_Region
+```
+In Section5, the variable of background characteristics was respondents' region, including Northern Uplands, Red River Delta, North Central, Central Coast, Central Highlands, Souteast and Mekong River Delta. These regions covered the entire map of Vietnam. The distribution of percentage is shown in Section5_Region.
+
+```{r, include=FALSE}
+#### Section6_Education ####
+
+# Education + Convert into a tibble
+Education <- just_page_135_no_header_no_footer[27:32]
+Section6_Education <- tibble(all = Education)
+
+Section6_Education <-
+    Section6_Education |>
+    mutate(all = str_squish(all)) |>
+    mutate(all = str_replace(all, ",", ".")) |>
+    separate(col = all,
+             into = c("Background Characteristic", "No way to Avoid", "Abstain from Sex", "Use condom", "One sexual partner", "Avoid prostitues", "Avoid injections", "Don't know any way", "Percentage with misinformation"),
+             sep = " ", 
+             remove = TRUE,
+             fill = "right",
+             extra = "drop"
+    )
+
+Section6_Education[2,1] <- c('No education')
+Section6_Education[2,2] <- c('11.3')
+Section6_Education[2,3] <- c('5.7')
+Section6_Education[2,4] <- c('12.6')
+Section6_Education[2,5] <- c('35.8')
+Section6_Education[2,6] <- c('12.9')
+Section6_Education[2,7] <- c('8.9')
+Section6_Education[2,8] <- c('47.7')
+Section6_Education[2,9] <- c('1.2')
+
+Section6_Education[3,1] <- c('Some primary')
+Section6_Education[3,2] <- c('6.0')
+Section6_Education[3,3] <- c('3.5')
+Section6_Education[3,4] <- c('16.8')
+Section6_Education[3,5] <- c('55.0')
+Section6_Education[3,6] <- c('16.8')
+Section6_Education[3,7] <- c('15.5')
+Section6_Education[3,8] <- c('30.4')
+Section6_Education[3,9] <- c('1.4')
+
+Section6_Education[4,1] <- c('Completed primary')
+Section6_Education[4,2] <- c('5.3')
+Section6_Education[4,3] <- c('2.9')
+Section6_Education[4,4] <- c('31.1')
+Section6_Education[4,5] <- c('64.0')
+Section6_Education[4,6] <- c('19.2')
+Section6_Education[4,7] <- c('22.4')
+Section6_Education[4,8] <- c('18.1')
+Section6_Education[4,9] <- c('2.1')
+
+Section6_Education[5,1] <- c('Completed lower secondary')
+Section6_Education[5,2] <- c('1.8')
+Section6_Education[5,3] <- c('2.6')
+Section6_Education[5,4] <- c('4.9')
+Section6_Education[5,5] <- c('34.3')
+Section6_Education[5,6] <- c('78.6')
+Section6_Education[5,7] <- c('21.5')
+Section6_Education[5,8] <- c('30.2')
+Section6_Education[5,9] <- c('5.7')
+
+Section6_Education[6,1] <- c('Completed higher secondary')
+Section6_Education[6,2] <- c('0.9')
+Section6_Education[6,3] <- c('4.9')
+Section6_Education[6,4] <- c('47.2')
+Section6_Education[6,5] <- c('84.9')
+Section6_Education[6,6] <- c('29.1')
+Section6_Education[6,7] <- c('44.0')
+Section6_Education[6,8] <- c('2.6')
+Section6_Education[6,9] <- c('6.2')
+
+library(readr)
+write.csv(Section6_Education, file = "Section6_Education.csv", row.names=FALSE) 
+```
+
+```{r}
+Section6_Education
+```
+Finally, in Section6, the education level was taken into account. Different education levels consist of five categories: no education, some primary, completed primary, completed lower secondary, completed higher secondary. It is noticeable to see that when Vietnam women had no education background, they were more likely to answer that they didn't know any way to avoid the disease. The distribution of percentage is shown in Section6_Education.
+
+# RESULTS
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+```
+
+```{r, Reading CSVs, include=FALSE}
+section_1 <- read_csv("Section1_Age.csv")
+section_2 <- read_csv("Section2_Marital_Status.csv")
+section_3 <- read_csv("Section3_Residence.csv")
+section_4 <- read_csv("Section4_Project_Province.csv")
+section_5 <- read_csv("Section5_Region.csv")
+section_6 <- read_csv("Section6_Education.csv")
+# The csv version has been converted vertically based on background characteristic, the corresponding percentage and conditions of having sex/ways to avoid AIDS.
+modified_section_1 <- read_csv("Modified_Section1_Age.csv")
+modified_section_2 <- read_csv("Modified_Section2_Marital_Status.csv")
+modified_section_3 <- read_csv("Modified_Section3_Residence.csv")
+modified_section_4 <- read_csv("Modified_Section4_Project_Province.csv")
+modified_section_5 <- read_csv("Modified_Section5_Region.csv")
+modified_section_6 <- read_csv("Modified_Section6_Education.csv")
+```
+
+```{r, Visualization for section_1, echo=FALSE}
+modified_section_1 = modified_section_1 %>%
+  rename(Conditions="Conditions of Having Sex")
+
+ggplot(modified_section_1) +
+  geom_col(aes(x=Conditions, y=Percentage, fill=Age), position="dodge2") +
+  guides(fill=guide_legend(title="Age")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Different Ages Groups of Different Conditions of Having Sex") +
+  ylab("Percentage of People") +
+  ggtitle("Percentage of People VS Different Ages Groups of Different Conditions of Having Sex")
+```
+# Section 1: Age
+Bars in different colors indicating different Age Groups. The height of each bar represents the percentage of individuals choosing different ways to avoid AIDS. The majority of Vietnamese women across all age groups chose to have one sexual partner, with about 70% of people on average. Within those who selected "avoid injections" and "avoid prostitutes", there are similar rising trends. It shows that as age groups became older, more and more women realized that both injections and prostitutes are detrimental to their health. All age groups were least likely to choose "abstain from sex" and "no way to avid". The proportion of receiving misinformation was small.
+
+```{r, Visualization for section_2,echo=FALSE}
+modified_section_2 = modified_section_2 %>%
+  rename(Conditions="Conditions of Having Sex", Marriage="Marital Statuses")
+
+ggplot(modified_section_2) +
+  geom_col(aes(x=Conditions, y=Percentage, fill=Marriage), position="dodge2") +
+  guides(fill=guide_legend(title="Marriage")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Different Marital Statuses of Different Conditions of Having Sex") +
+  ylab("Percentage of People") +
+  ggtitle("Percentage of People VS Different Marital Statuses of Different Conditions of Having Sex")
+```
+# Section 2: Marital Status
+The red bars represent percentage of currently married Vietnamese women within the survey's time frame respond to each method.
+The blue bars represent that of answers by those who were formerly married. The currently married group outnumbered the formerly married group when comparing the percentage of selecting one sexual partner and using condom. 
+
+```{r, Visualization for section_3, echo=FALSE}
+modified_section_3 = modified_section_3 %>%
+  rename(Conditions="Conditions of Having Sex")
+
+ggplot(modified_section_3) +
+  geom_col(aes(x=Conditions, y=Percentage, fill=Residence), position="dodge2") +
+  guides(fill=guide_legend(title="Residence")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Different Residences of Different Conditions of Having Sex") +
+  ylab("Percentage of People") +
+  ggtitle("Percentage of People VS Different Residences of Different Conditions of Having Sex")
+```
+# Section 3: Residence
+The red bars and the blue bars demonstrate the percentage of Vietnamese women lived in rural areas and those lived in urban areas respectively. Focusing on the comparison between two groups, we can draw the conclusion that women in Vietnam's urban areas were significantly more knowledgeable in acquainting AIDS prevention tips. The percent of people lived in urban areas choosing "avoid injections", "avoid prostitutes", "one sexual partner" and "use condom" are higher than the proportion of people lived in rural areas.
+
+```{r, Visualization for section_4, echo=FALSE}
+modified_section_4 = modified_section_4 %>%
+  rename(Conditions="Conditions of Having Sex", Province="Project Province")
+
+ggplot(modified_section_4) +
+  geom_col(aes(x=Conditions, y=Percentage, fill=Province), position="dodge2") +
+  guides(fill=guide_legend(title="Province")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Different Provinces of Different Conditions of Having Sex") +
+  ylab("Percentage of People") +
+  ggtitle("Percentage of People VS Different Provinces of Different Conditions of Having Sex")
+```
+# Section 4: Project Province
+The red bars show the percentage of Vietnamese women lived in non-project provinces and the blue bars illustrate the percentage of those lived in project provinces. It is surprising to see that they are slightly different in percentage of people selecting each approach, except for choosing either "one sexual partner", "use condom" and "don't know any way". It shows that the Population and Family Health Project had partial positive effect for those upgraded provinces. However, the practicability and the effectiveness still needed to be improved.
+
+```{r, Visualization for section_5, echo=FALSE}
+modified_section_5 = modified_section_5 %>%
+  rename(Conditions="Conditions of Having Sex")
+
+ggplot(modified_section_5) +
+  geom_col(aes(x=Conditions, y=Percentage, fill=Region), position="dodge2") +
+  guides(fill=guide_legend(title="Region")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Different Regions of Different Conditions of Having Sex") +
+  ylab("Percentage of People") +
+  ggtitle("Percentage of People VS Different Regions of Different Conditions of Having Sex")
+```
+# Section 5: Region
+Bars in different colors represent the percentage of respondents located in seven different regions. The name of each region match each color. For example, those red bars demonstrate the region of Central Coast. The map of Vietnam is composed by these regions, which proved as well that this survey was nationally statistical. Zoom in those who preferred one sexual partner, we can see that the highest percentage occurs in the region of Red River Delta, followed by the region of Northern Uplands and North Central. Across different regions, the percentages of people choosing the same way to avoid AIDS are different. Nonetheless, it is worthwhile to notice that for the region of Central Highlands and Mekong River Delta, women were less likely to comprehend or be informed of various ways to prevent AIDS. A higher percentage of Vietnamese women in Central Highlands reported "No way to avoid". Moreover, high percentage of women from these two regions responded in "don't know any way" and low percent of people knew that using condom assisted them in preventing AIDS.
+
+
+```{r, Visualization for section_6, echo=FALSE}
+modified_section_6 = modified_section_6 %>%
+  rename(Conditions="Conditions of Having Sex")
+
+ggplot(modified_section_6) +
+  geom_col(aes(x=Conditions, y=Percentage, fill=Education), position="dodge2") +
+  guides(fill=guide_legend(title="Education")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Different Educations of Different Conditions of Having Sex") +
+  ylab("Percentage of People") +
+  ggtitle("Percentage of People VS Different Educations of Different Conditions of Having Sex")
+```
+# Section 6: Education
+Bars in different colors represent percentage of respondents with different education level. For example, those red bars show the percentage of Vietnamese women who had received completed higher secondary education. Most of highly-educated women chose the option of having one sexual partner and using condom. Almost 80% of women who had completed lower secondary education chose "avoid prostitutes". Taking no account of this option, there were subtle discrepancy between percentage of people who completed lower secondary education and no education. This emphasized that the popularizing rate of AIDS knowledge within individuals who had these two education levels.
+
+# DISCUSSION
+  This paper amplifies the aspect of AIDS prevention which is closely associated with individuals' health. The key to controlling AIDS is to curb sexual transmission. Sexual behavior is personal and private. It is difficult for external third parties to provide timely and effective intervention and assistance for sexual behaviors that may result in HIV/AIDS infection. Therefore, controlling sexual transmission has become a major challenge worldwide. Then solving the problem from the root cause, that is, making people gradually understand the many kinds of measures to prevent AIDS can help a lot. The Vietnam DHS (1997) conducted a nationally statistical survey of Vietnamese women between the ages of 15-49. The survey collected and documented the choices and preferences of women with different background characteristics regarding methods of AIDS prevention. It provides an indirect indication of women's individual knowledge of HIV and their attitudes toward AIDS avoidance at that time. 
+  The results show that (1) As the age increased, women would increasingly avoid personal behaviors of injection and prostitutes. Unrelated to the variable of age, Vietnamese women agreed that AIDS prevention was achieved by having only one sexual partner and using condoms.(2) Women who are currently-married knew more about how to prevent AIDS than women who had been married formerly. The latter reported "don't know any way" and they were not able to avoid it effectively avoid. Possible reasons for this lie in the presence or absence of a regular marital partner. The stability of the marital relationship allowed currently-married women to be conscious of preventing potential diseases in order to be safe. (3) Vietnamese women living in urban areas were more knowledgeable about ways to prevent AIDS. The main reason for this is attributed to the fact that women lived in rural areas were more difficult to access to AIDS information and health education services than in cities. Rural populations were less likely to know how to protect themselves from HIV infection. (4) The implementation of related programs was feasible in some provinces, but lacks significant effectiveness. Project provinces preferred single-partner methods, while non-project provinces tended to choose the traditional option of condom uses. (5) Around the Red River Delta region which was the economic hub of the capital, Vietnamese women had relatively greater knowledge about AIDS prevention. In contrast, in relatively poor and developed regions, such as the Central Highlands and Mekong River Delta, the prevalence of AIDS prevention had not kept up with the average. (6) Overall, the level of education received was proportional to the number of methods learned. However, there were astonishing data in the percentage of Vietnamese women who had completed lower secondary. They included a strong preference for avoiding prostitution, but not so much for "single partner" and "condom use".
+  The essence of raising people's knowledge and awareness about AIDS prevention and awareness lies in improving the economic structure of the country. When societies are economically optimized, people will advance in all aspects of their lives. A good education system is one of the most beneficial 'social vaccinations' for AIDS prevention. For the sexually active population, the state has an obligation to raise awareness and popularity of HIV/AIDS prevention.
+  The Vietnam DHS 1997 data set and report only counted Vietnamese women in the 15-49 age group as respondents. The survey did not cover the group of women aged 50 years and older. This allows the sample to reflect only the knowledge base of women in this specific age range regarding AIDS prevention. Future surveys will need to expand the age range coverage so that the sample data can account for a larger number of groups, generalizing the fact of the world. In addition, for education studies, the level of education is not sufficient to clearly convey information to data consumers. For example, there was a significant difference in the proportion of choices between completed primary and completed lower secondary. But the underlying reasons have not been identified. Future investigations need to break down more levels of education in order to identify the determinacy of education on the choice of AIDS prevention methods.
+
+```
+
+
+# APPENDIX
+
+# Datasheet "Datasheet of AIDS Prevention Dataset in Vietnam DHS, 1997" is attached at https://github.com/luyijia1/DHS1997Vietnam.git
+
+@Manual{,
+    title = {janitor: Simple Tools for Examining and Cleaning Dirty Data},
+    author = {Sam Firke},
+    year = {2021},
+    note = {R package version 2.1.0},
+    url = {https://github.com/sfirke/janitor},
+  }
+  
+@Manual{,
+    title = {pdftools: Text Extraction, Rendering and Converting of PDF Documents},
+    author = {Jeroen Ooms},
+    year = {2022},
+    note = {https://docs.ropensci.org/pdftools/ (website)
+https://github.com/ropensci/pdftools#readme (devel)
+https://poppler.freedesktop.org (upstream)},
+  }
+  
+@Manual{,
+    title = {R: A Language and Environment for Statistical Computing},
+    author = {{R Core Team}},
+    organization = {R Foundation for Statistical Computing},
+    address = {Vienna, Austria},
+    year = {2022},
+    url = {https://www.R-project.org/},
+  }
+
+@Manual{,
+    title = {purrr: Functional Programming Tools},
+    author = {Lionel Henry and Hadley Wickham},
+    year = {2020},
+    note = {http://purrr.tidyverse.org, https://github.com/tidyverse/purrr},
+  }
+
+@Article{,
+    title = {Welcome to the {tidyverse}},
+    author = {Hadley Wickham and Mara Averick and Jennifer Bryan and Winston Chang and Lucy D'Agostino McGowan and Romain François and Garrett Grolemund and Alex Hayes and Lionel Henry and Jim Hester and Max Kuhn and Thomas Lin Pedersen and Evan Miller and Stephan Milton Bache and Kirill Müller and Jeroen Ooms and David Robinson and Dana Paige Seidel and Vitalie Spinu and Kohske Takahashi and Davis Vaughan and Claus Wilke and Kara Woo and Hiroaki Yutani},
+    year = {2019},
+    journal = {Journal of Open Source Software},
+    volume = {4},
+    number = {43},
+    pages = {1686},
+    doi = {10.21105/joss.01686},
+  }
+  
+@Article{,
+    title = {stringi: Fast and portable character string processing in R},
+    author = {Marek Gagolewski},
+    journal = {Journal of Statistical Software},
+    year = {2021},
+    note = {to appear},
+  }
+  
+@Manual{,
+    title = {stringi: Fast and portable character string processing in R},
+    author = {Marek Gagolewski},
+    year = {2021},
+    note = {R package version 1.7.6},
+    url = {https://stringi.gagolewski.com/},
+  }
+  
+@misc{national committee for population and family planning/vietnam_1999, title={Vietnam DHS, 1997 - Final report (English)}, url={https://dhsprogram.com/publications/publication-FR104-DHS-Final-Reports.cfm}, journal={Vietnam: DHS, 1997 - Final Report (English)}, author={National Committee for Population and Family Planning/Vietnam}, year={1999}, month={Mar}} 
+
+
